@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-fileconnect-dev-01843-authRole",
+      "UnauthRoleArn": "arn:aws:iam::851725342346:role/amplify-fileconnect-dev-01843-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::851725342346:role/amplify-fileconnect-dev-01843-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-fileconnect-dev-01843-deployment",
+      "UnauthRoleName": "amplify-fileconnect-dev-01843-unauthRole",
+      "StackName": "amplify-fileconnect-dev-01843",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:851725342346:stack/amplify-fileconnect-dev-01843/8ed4d4a0-dd7c-11ee-a32b-020c68220c53",
+      "AmplifyAppId": "d3a9rzy0lz4rvf"
+    },
+    "categories": {
+      "auth": {
+        "fileconnect7b168d27": {}
+      }
+    }
+  }
+}
