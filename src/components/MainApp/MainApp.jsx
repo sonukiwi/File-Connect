@@ -2,17 +2,25 @@ import React from "react";
 import LogoutIcon from "@mui/icons-material/LogoutSharp";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
+import DeleteIcon from "@mui/icons-material/Delete";
 import FileUpload from "../FileUpload/FileUpload";
 import DataTable from "../DataTable/DataTable";
+import TextSearch from "../TextSearch/TextSearch";
 
 const DeleteFileButtonStyles = {
   height: "100%",
-  flexGrow: 1,
 };
 
 const FileUploadStyles = {
   height: "100%",
-  flexGrow: 3,
+  padding: "0rem 2rem",
+};
+
+const TextSearchStyles = {
+  height: "100%",
+  flexGrow: 1,
+  marginLeft: "4rem",
+  backgroundColor: "rgb(222, 221, 221)",
 };
 
 const DataTableDivStyles = {
@@ -30,17 +38,23 @@ export default function MainApp({ onLogout, uploadFile }) {
         </Tooltip>
       </div>
       <div className="file-delete-btn-and-upload-file-div">
-        <Button
-          variant="contained"
-          style={DeleteFileButtonStyles}
-          color="error"
-        >
-          Delete File(s)
-        </Button>
+        <Tooltip title="Delete Selected Files" placement="top">
+          <Button
+            variant="contained"
+            style={DeleteFileButtonStyles}
+            color="error"
+          >
+            <DeleteIcon />
+          </Button>
+        </Tooltip>
         <FileUpload
           buttonText="Upload File"
           style={FileUploadStyles}
           uploadFile={uploadFile}
+        />
+        <TextSearch
+          style={TextSearchStyles}
+          placeholder="Search Files. Enter text and press enter to search."
         />
       </div>
       <div className="data-table" style={DataTableDivStyles}>
