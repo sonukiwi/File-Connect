@@ -3,9 +3,9 @@ import LogoutIcon from "@mui/icons-material/LogoutSharp";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FileUpload from "../FileUpload/FileUpload";
-import DataTable from "../DataTable/DataTable";
-import TextSearch from "../TextSearch/TextSearch";
+import FileUpload from "../../UI/FileUpload/FileUpload";
+import DataTable from "../../UI/DataTable/DataTable";
+import TextSearch from "../../UI/TextSearch/TextSearch";
 
 const DeleteFileButtonStyles = {
   height: "100%",
@@ -25,6 +25,7 @@ const TextSearchStyles = {
 
 const DataTableDivStyles = {
   backgroundColor: "rgb(222, 221, 221)",
+  borderRadius: "0",
 };
 
 export default function MainApp({ onLogout, uploadFile }) {
@@ -57,8 +58,8 @@ export default function MainApp({ onLogout, uploadFile }) {
           placeholder="Search Files. Enter text and press enter to search."
         />
       </div>
-      <div className="data-table" style={DataTableDivStyles}>
-        <DataTable />
+      <div className="data-table">
+        <DataTable style={DataTableDivStyles} />
       </div>
     </div>
   );

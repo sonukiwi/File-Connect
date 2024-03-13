@@ -13,15 +13,14 @@ code {
 }
 
 .app {
-  width: 100vw;
-  height: 100vh;
+  max-width: 100vw;
+  min-height: 100vh;
   background-color: rgb(149, 148, 148);
 }
 
 .main-app {
-  padding: 1rem 5rem;
+  padding: 2rem 5rem;
   width: 100%;
-  min-height: 100%;
 }
 
 .top-bar {
@@ -41,4 +40,17 @@ code {
 
 .data-table {
   margin-top: 2rem;
+}
+
+.table-data-record:hover {
+  background-color: rgb(205, 203, 203);
+}
+
+footer {
+  padding: 0.4rem 0rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  color: white;
 }

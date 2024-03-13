@@ -1,8 +1,8 @@
 import { Amplify } from "aws-amplify";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
-import LinearProgressBar from "./components/LinearProgressBar/LinearProgressBar";
-import MainApp from "./components/MainApp/MainApp";
+import LinearProgressBar from "./components/UI/LinearProgressBar/LinearProgressBar";
+import MainApp from "./components/App/MainApp/MainApp";
 import config from "./amplifyconfiguration.json";
 import { useState } from "react";
 Amplify.configure(config);
@@ -33,6 +33,11 @@ function App({ signOut, user }) {
     <div className="app">
       {linearProgressBarComponent}
       {mainAppComponent}
+      <footer>
+        <p>
+          Developed with ❤️ by <b>Mohammad Sonu</b> (sonukiwi17@gmail.com)
+        </p>
+      </footer>
     </div>
   );
 }
