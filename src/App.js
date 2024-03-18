@@ -21,6 +21,7 @@ const linearProgressBarConfig = {
 function App({ signOut, user }) {
   function uploadFile(event) {
     alert("Uploading file ...");
+    console.log(event.target.files);
   }
   const [isPageLoading, setIsPageLoading] = useState(false);
   const linearProgressBarComponent = isPageLoading ? (
