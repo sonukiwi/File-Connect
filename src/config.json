@@ -1,0 +1,7 @@
+{
+  "UPLOAD_FILES_LAMBDA_URL": "https://6ooivimbcqaytkj3u3venj4rdu0wmmxl.lambda-url.ap-southeast-1.on.aws",
+  "UPLOAD_CODES": {
+    "SUCCESS": "SUCCESS",
+    "FAILURE": "FAILURE"
+  }
+}

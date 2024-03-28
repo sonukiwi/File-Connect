@@ -38,7 +38,7 @@ export default function MainApp({ onLogout, uploadFile }) {
           </Button>
         </Tooltip>
       </div>
-      <div className="file-delete-btn-and-upload-file-div">
+      <div className="actions-div">
         <Tooltip title="Delete Selected Files" placement="top">
           <Button
             variant="contained"

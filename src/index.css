@@ -29,7 +29,7 @@ code {
   justify-content: flex-end;
 }
 
-.file-delete-btn-and-upload-file-div {
+.actions-div {
   display: flex;
   align-items: center;
   gap: 1rem;
