@@ -46,6 +46,11 @@ code {
   background-color: rgb(205, 203, 203);
 }
 
+.custom-modal-close-button {
+  text-align: right;
+  background-color: red;
+}
+
 footer {
   padding: 0.4rem 0rem;
   display: flex;

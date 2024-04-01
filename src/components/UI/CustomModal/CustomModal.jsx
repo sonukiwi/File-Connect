@@ -1,8 +1,12 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -16,21 +20,29 @@ const style = {
   p: 4,
 };
 
-export default function CustomModal({ open, heading, description }) {
+export default function CustomModal({
+  open,
+  heading,
+  description,
+  buttonText,
+  onClose,
+}) {
   return (
-    <Modal
+    <Dialog
       open={open}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
+      onClose={onClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
     >
-      <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-          {heading}
-        </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+      <DialogTitle id="alert-dialog-title">{heading}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
           {description}
-        </Typography>
-      </Box>
-    </Modal>
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>{buttonText}</Button>
+      </DialogActions>
+    </Dialog>
   );
 }

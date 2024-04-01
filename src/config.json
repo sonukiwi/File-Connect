@@ -1,7 +1,24 @@
 {
-  "UPLOAD_FILES_LAMBDA_URL": "https://6ooivimbcqaytkj3u3venj4rdu0wmmxl.lambda-url.ap-southeast-1.on.aws",
-  "UPLOAD_CODES": {
+  "UPLOAD_FILES_LAMBDA_URL": "https://kjobxqcr734gyjw2v5mamjvd3q0ahkat.lambda-url.ap-southeast-1.on.aws",
+  "RETURN_CODES": {
     "SUCCESS": "SUCCESS",
-    "FAILURE": "FAILURE"
+    "FAILURE": "FAILURE",
+    "STORAGE_NOT_AVAILABLE": "STORAGE_NOT_AVAILABLE"
+  },
+  "ALERT_DURATION_IN_SECONDS": 5,
+  "FILES_UPLOADING_TOAST_CONFIG": {
+    "message": "Uploading Files. Please Wait ...",
+    "vertical": "bottom",
+    "horizontal": "center"
+  },
+  "INSUFFICIENT_STORAGE_CONFIG": {
+    "heading": "Storage Not Available",
+    "description": "Oops. Looks like you're running out of storage. Try deleting some files to free up some space. ",
+    "buttonText": "Close"
+  },
+  "UPLOAD_UNKNOWN_ERROR": {
+    "heading": "Unexpected Error",
+    "description": "Some unexpected error has occurred. Please try again.",
+    "buttonText": "Close"
   }
 }
