@@ -21,12 +21,14 @@ code {
 .main-app {
   padding: 2rem 5rem;
   width: 100%;
+  min-height: 100vh;
 }
 
 .top-bar {
   width: 100%;
   display: flex;
   justify-content: flex-end;
+  gap: 0.4rem;
 }
 
 .actions-div {
@@ -58,4 +60,24 @@ footer {
   align-items: center;
   background-color: black;
   color: white;
+}
+
+.no_files_found_div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 10rem;
+  font-size: 20px;
+}
+
+.load__more__btn__div {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.load__more__btn__div > .load__more__btn {
+  padding: 1rem 2rem;
+  border-radius: 0;
 }

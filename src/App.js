@@ -1,50 +1,104 @@
 import { Amplify } from "aws-amplify";
-import { v4 as uuidv4 } from "uuid";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
-import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import MainApp from "./components/App/MainApp/MainApp";
 import CircularProgressBarWithOverlay from "./components/UI/CircularProgressBarWithOverlay/CircularProgressBarWithOverlay";
 import config from "./amplifyconfiguration.json";
 import appConfig from "./config.json";
-import { useState } from "react";
+import { get_file_presigned_download_url, get_files_fetch_url } from "./utils";
+import { useEffect, useReducer } from "react";
+import React from "react";
 import CustomModal from "./components/UI/CustomModal/CustomModal";
+import { reducer } from "./reducer";
 Amplify.configure(config);
 
+const initialState = {
+  isPageLoading: true,
+  isLoadMoreFilesBtnLoading: false,
+  filesInfo: {},
+  checkedIndexes: [],
+  dialog: {
+    isVisible: false,
+  },
+  toast: {
+    isVisible: false,
+    vertical: appConfig.FILES_UPLOADING_TOAST_CONFIG.vertical,
+    horizontal: appConfig.FILES_UPLOADING_TOAST_CONFIG.horizontal,
+  },
+};
+
 function App({ signOut, user }) {
+  // State :: START
+  const [state, dispatch] = useReducer(reducer, initialState);
+  // State :: END
+
   // Handlers :: START
-  function close_modal() {
-    setModal({ isVisible: false });
-  }
-  function add_alert(severity, message) {
-    const uniqueIdOfAlert = uuidv4();
-    setAlerts((prevAlerts) => [
-      ...prevAlerts,
-      {
-        id: uniqueIdOfAlert,
-        severity,
+  function show_toast(message, hideAfterSeconds = 0) {
+    dispatch({
+      type: "SHOW_TOAST",
+      payload: {
         message,
       },
-    ]);
-    setTimeout(() => {
-      setAlerts((prevAlerts) =>
-        prevAlerts.filter((alert) => alert.id !== uniqueIdOfAlert)
-      );
-    }, appConfig.ALERT_DURATION_IN_SECONDS * 1000);
+    });
+    if (hideAfterSeconds !== 0) {
+      setTimeout(() => {
+        hide_toast();
+      }, hideAfterSeconds * 1000);
+    }
   }
-  function remove_alert(alertId) {
-    setAlerts((prevAlerts) =>
-      prevAlerts.filter((alert) => alert.id !== alertId)
-    );
+  function hide_toast() {
+    dispatch({ type: "HIDE_TOAST" });
+  }
+  function show_dialog(heading, description, buttonText) {
+    dispatch({
+      type: "SHOW_DIALOG",
+      payload: { heading, description, buttonText },
+    });
+  }
+  function close_dialog() {
+    dispatch({ type: "HIDE_DIALOG" });
+  }
+  function load_more_files() {
+    dispatch({ type: "START__LOAD_MORE_FILES" });
+    const filesCount = filesInfo.Contents.length;
+    const lastKeySoFar = filesInfo.Contents[filesCount - 1].Key;
+    const apiUrl = get_files_fetch_url(user.username, lastKeySoFar);
+    fetch(apiUrl)
+      .then((res) => res.json())
+      .then((responseData) => {
+        const isRequestSuccessful =
+          responseData.code === appConfig.RETURN_CODES.SUCCESS;
+        if (isRequestSuccessful) {
+          dispatch({ type: "SET_FILES_INFO", payload: responseData.data });
+          const loadedFilesCount = responseData.data.Contents.length;
+          show_toast(
+            `${loadedFilesCount} file${
+              loadedFilesCount > 1 ? "s" : ""
+            } loaded successfully`,
+            appConfig.FILES_LOADED_TOAST_CONFIG.hideAfterSeconds
+          );
+        } else {
+          throw "Error";
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        const { heading, buttonText, description } =
+          appConfig.UNEXPECTED_ERROR_CONFIG;
+        show_dialog(heading, description.GET_MORE_FILES, buttonText);
+      })
+      .finally(() => {
+        dispatch({ type: "COMPLETE__LOAD_MORE_FILES" });
+      });
   }
   function start_upload(files) {
-    setIsPageLoading(true);
-    setToast((prevToast) => ({
-      ...prevToast,
-      isVisible: true,
-      message: appConfig.FILES_UPLOADING_TOAST_CONFIG.message,
-    }));
+    dispatch({ type: "START__PAGE_LOADING" });
+    show_toast(
+      `Uploading ${files.length} file${
+        files.length > 1 ? "s" : ""
+      }. Please wait ...`
+    );
     const formData = new FormData();
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -60,40 +114,36 @@ function App({ signOut, user }) {
         const isUploadSuccessful =
           responseData.code === appConfig.RETURN_CODES.SUCCESS;
         if (isUploadSuccessful) {
-          const alertMessage = `File${
+          const toastMessage = `File${
             files.length > 1 ? "s" : ""
-          } uploaded successfully`;
-          add_alert("success", alertMessage);
+          } uploaded successfully.`;
+          show_toast(
+            toastMessage,
+            appConfig.UPLOAD_FILES_COMPLETE_TOAST_CONFIG.hideAfterSeconds
+          );
+          dispatch({ type: "RESET_FILES_INFO" });
+          get_first_batch_of_files(user.username);
         } else {
           const errorCode = responseData.errorCode;
           const isStorageNotAvailable =
             errorCode === appConfig.RETURN_CODES.STORAGE_NOT_AVAILABLE;
           if (isStorageNotAvailable) {
-            setModal({
-              isVisible: true,
-              heading: appConfig.INSUFFICIENT_STORAGE_CONFIG.heading,
-              description: appConfig.INSUFFICIENT_STORAGE_CONFIG.description,
-              buttonText: appConfig.INSUFFICIENT_STORAGE_CONFIG.buttonText,
-            });
+            dispatch({ type: "COMPLETE__PAGE_LOADING" });
+            const { heading, description, buttonText } =
+              appConfig.INSUFFICIENT_STORAGE_CONFIG;
+            show_dialog(heading, description, buttonText);
           } else {
-            throw "Some Error Occured";
+            throw "Error";
           }
         }
       })
-      .catch((error) => {
-        setModal({
-          isVisible: true,
-          heading: appConfig.UPLOAD_UNKNOWN_ERROR.heading,
-          description: appConfig.UPLOAD_UNKNOWN_ERROR.description,
-          buttonText: appConfig.UPLOAD_UNKNOWN_ERROR.buttonText,
-        });
-      })
-      .finally(() => {
-        setIsPageLoading(false);
-        setToast((prevToast) => ({
-          ...prevToast,
-          isVisible: false,
-        }));
+      .catch((err) => {
+        dispatch({ type: "COMPLETE__PAGE_LOADING" });
+        console.error(err);
+        const { heading, buttonText, description } =
+          appConfig.UNEXPECTED_ERROR_CONFIG;
+        show_dialog(heading, description.UPLOAD, buttonText);
+        hide_toast();
       });
   }
   function upload_files(event) {
@@ -102,21 +152,150 @@ function App({ signOut, user }) {
       start_upload(event.target.files);
     }
   }
+  function get_first_batch_of_files(userName) {
+    const apiUrl = get_files_fetch_url(userName);
+    fetch(apiUrl)
+      .then((res) => res.json())
+      .then((responseData) => {
+        const isRequestSuccessful =
+          responseData.code === appConfig.RETURN_CODES.SUCCESS;
+        if (isRequestSuccessful) {
+          dispatch({ type: "SET_FILES_INFO", payload: responseData.data });
+        } else {
+          throw "Error";
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        const { heading, buttonText, description } =
+          appConfig.UNEXPECTED_ERROR_CONFIG;
+        show_dialog(heading, description.GET_FILES, buttonText);
+      })
+      .finally(() => {
+        dispatch({ type: "COMPLETE__PAGE_LOADING" });
+      });
+  }
+  function handle_checkbox_change(event, fileIndex) {
+    const isChecked = event.target.checked;
+    if (isChecked) {
+      dispatch({ type: "ADD_CHECKED_INDEX", payload: { index: fileIndex } });
+    } else {
+      dispatch({ type: "REMOVE_CHECKED_INDEX", payload: { index: fileIndex } });
+    }
+  }
+  function delete_files() {
+    const filesToDelete = checkedIndexes.map((index) => {
+      return filesInfo.Contents[index].fileName;
+    });
+    dispatch({ type: "START__PAGE_LOADING" });
+    show_toast(
+      `Deleting ${filesToDelete.length} file${
+        filesToDelete.length > 1 ? "s" : ""
+      }. Please wait ...`
+    );
+    const postData = {
+      userName: user.username,
+      files: filesToDelete,
+    };
+    fetch(appConfig.DELETE_FILES_LAMBDA_URL, {
+      method: "POST",
+      body: JSON.stringify(postData),
+    })
+      .then((response) => response.json())
+      .then((responseData) => {
+        const isDeleteSuccessful =
+          responseData.code === appConfig.RETURN_CODES.SUCCESS;
+        if (isDeleteSuccessful) {
+          dispatch({
+            type: "REMOVE_FILES_FROM_FILES_INFO",
+            payload: {
+              files: filesToDelete,
+            },
+          });
+          dispatch({ type: "RESET_CHECKED_INDEXES" });
+          const toastMessage = `File${
+            filesToDelete.length > 1 ? "s" : ""
+          } deleted successfully.`;
+          show_toast(
+            toastMessage,
+            appConfig.DELETE_FILES_COMPLETE_TOAST_CONFIG.hideAfterSeconds
+          );
+        } else {
+          throw "Error";
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        const { heading, buttonText, description } =
+          appConfig.UNEXPECTED_ERROR_CONFIG;
+        show_dialog(heading, description.DELETE, buttonText);
+        hide_toast();
+      })
+      .finally(() => {
+        dispatch({ type: "COMPLETE__PAGE_LOADING" });
+      });
+  }
+  function download_file() {
+    const fileToDownload = filesInfo.Contents[checkedIndexes[0]].fileName;
+    show_toast(`Downloading file. Please wait ...`);
+    const apiUrl = get_file_presigned_download_url(
+      user.username,
+      fileToDownload
+    );
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then(async (responseData) => {
+        const isRequestSuccessful =
+          responseData.code === appConfig.RETURN_CODES.SUCCESS;
+        if (isRequestSuccessful) {
+          const { url: presignedUrl } = responseData.data;
+          const link = document.createElement("a");
+          link.href = presignedUrl;
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+          const toastMessage = `Download started successfully.`;
+          show_toast(
+            toastMessage,
+            appConfig.DOWNLOAD_FILE_COMPLETE_TOAST_CONFIG.hideAfterSeconds
+          );
+        } else {
+          throw "Error";
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        const { heading, buttonText, description } =
+          appConfig.UNEXPECTED_ERROR_CONFIG;
+        show_dialog(heading, description.DOWNLOAD, buttonText);
+        hide_toast();
+      });
+  }
   // Handlers :: END
 
-  // States :: START
-  const [isPageLoading, setIsPageLoading] = useState(false);
-  const [toast, setToast] = useState({
-    isVisible: false,
-    vertical: appConfig.FILES_UPLOADING_TOAST_CONFIG.vertical,
-    horizontal: appConfig.FILES_UPLOADING_TOAST_CONFIG.horizontal,
-  });
-  const [modal, setModal] = useState({ isVisible: false });
-  const [alerts, setAlerts] = useState([]);
-  const areAlertsPresent = alerts.length > 0;
-  // States :: END
+  // useEffect :: START
+  useEffect(() => {
+    get_first_batch_of_files(user.username);
+  }, []);
+  // useEffect :: END
 
-  // Components :: START
+  const {
+    toast,
+    dialog,
+    isPageLoading,
+    filesInfo,
+    isLoadMoreFilesBtnLoading,
+    checkedIndexes,
+  } = state;
+  const dialogComponent = (
+    <CustomModal
+      open={dialog.isVisible}
+      heading={dialog.heading}
+      description={dialog.description}
+      buttonText={dialog.buttonText}
+      onClose={close_dialog}
+    />
+  );
   const toastComponent = (
     <Snackbar
       open={toast.isVisible}
@@ -125,31 +304,24 @@ function App({ signOut, user }) {
       key={toast.vertical + toast.horizontal}
     />
   );
-  const modalComponent = (
-    <CustomModal
-      open={modal.isVisible}
-      heading={modal.heading}
-      description={modal.description}
-      onClose={close_modal}
-      buttonText={modal.buttonText}
-    />
-  );
-  const alertsComponent =
-    areAlertsPresent &&
-    alerts.map((alert) => (
-      <Alert
-        severity={alert.severity}
-        key={alert.id}
-        onClose={() => remove_alert(alert.id)}
-      >
-        {alert.message}
-      </Alert>
-    ));
   const progressBarComponent = (
     <CircularProgressBarWithOverlay open={isPageLoading} />
   );
+  const isDeleteBtnActive = checkedIndexes.length > 0;
+  const isDownloadBtnActive = checkedIndexes.length === 1;
   const mainAppComponent = (
-    <MainApp onLogout={signOut} uploadFiles={upload_files} />
+    <MainApp
+      onLogout={signOut}
+      uploadFiles={upload_files}
+      filesInfo={filesInfo}
+      isLoadMoreFilesBtnLoading={isLoadMoreFilesBtnLoading}
+      isDeleteBtnActive={isDeleteBtnActive}
+      isDownloadBtnActive={isDownloadBtnActive}
+      loadMoreFiles={load_more_files}
+      onChangeCheckbox={handle_checkbox_change}
+      onDeleteFiles={delete_files}
+      onDownloadFile={download_file}
+    />
   );
   const footerComponent = (
     <footer>
@@ -158,13 +330,11 @@ function App({ signOut, user }) {
       </p>
     </footer>
   );
-  // Components :: END
 
   return (
     <div className="app">
-      {modalComponent}
+      {dialogComponent}
       {toastComponent}
-      {alertsComponent}
       {progressBarComponent}
       {mainAppComponent}
       {footerComponent}

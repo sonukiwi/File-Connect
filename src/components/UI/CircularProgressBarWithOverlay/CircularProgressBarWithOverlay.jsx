@@ -9,7 +9,11 @@ export default function CircularProgressBarWithOverlay({ open }) {
       aria-labelledby="modal-title"
       aria-describedby="modal-desc"
       open={open}
-      sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
       <Sheet
         variant="outlined"
@@ -18,6 +22,7 @@ export default function CircularProgressBarWithOverlay({ open }) {
           borderRadius: "md",
           p: 3,
           boxShadow: "lg",
+          outline: "none",
         }}
       >
         <CircularProgress variant="indeterminate" color="primary" />

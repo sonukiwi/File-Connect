@@ -1,11 +1,13 @@
 {
   "UPLOAD_FILES_LAMBDA_URL": "https://kjobxqcr734gyjw2v5mamjvd3q0ahkat.lambda-url.ap-southeast-1.on.aws",
+  "GET_FILES_LAMBDA_URL": "https://i7covsj6bo6ro2qmvt7gzlhw5q0lvcrx.lambda-url.ap-southeast-1.on.aws",
+  "DELETE_FILES_LAMBDA_URL": "https://rb6jn3bgkvyhucghlj5j7gbxfa0bqsgt.lambda-url.ap-southeast-1.on.aws",
+  "GET_PRESIGNED_URL_LAMBDA_URL": "https://lxmzlneuokewapp4fjsf25vrbq0lhdkg.lambda-url.ap-southeast-1.on.aws",
   "RETURN_CODES": {
     "SUCCESS": "SUCCESS",
     "FAILURE": "FAILURE",
     "STORAGE_NOT_AVAILABLE": "STORAGE_NOT_AVAILABLE"
   },
-  "ALERT_DURATION_IN_SECONDS": 5,
   "FILES_UPLOADING_TOAST_CONFIG": {
     "message": "Uploading Files. Please Wait ...",
     "vertical": "bottom",
@@ -16,9 +18,27 @@
     "description": "Oops. Looks like you're running out of storage. Try deleting some files to free up some space. ",
     "buttonText": "Close"
   },
-  "UPLOAD_UNKNOWN_ERROR": {
+  "UNEXPECTED_ERROR_CONFIG": {
     "heading": "Unexpected Error",
-    "description": "Some unexpected error has occurred. Please try again.",
-    "buttonText": "Close"
+    "buttonText": "Close",
+    "description": {
+      "UPLOAD": "Failed to upload files due to some unexpected error. Please try again.",
+      "GET_FILES": "Failed to fetch files due to some unexpected error. Please reload page",
+      "GET_MORE_FILES": "Failed to fetch files due to some unexpected error. Please try again.",
+      "DELETE": "Failed to delete files due to some unexpected error. Please try again.",
+      "DOWNLOAD": "Failed to download file due to some unexpected error. Please try again."
+    }
+  },
+  "FILES_LOADED_TOAST_CONFIG": {
+    "hideAfterSeconds": 3
+  },
+  "UPLOAD_FILES_COMPLETE_TOAST_CONFIG": {
+    "hideAfterSeconds": 3
+  },
+  "DELETE_FILES_COMPLETE_TOAST_CONFIG": {
+    "hideAfterSeconds": 3
+  },
+  "DOWNLOAD_FILE_COMPLETE_TOAST_CONFIG": {
+    "hideAfterSeconds": 3
   }
 }
