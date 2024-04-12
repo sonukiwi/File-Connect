@@ -55,7 +55,7 @@ export default function DataTable({ style, files, onChangeCheckbox }) {
           <TableBody>
             {files.map((file, index) => (
               <TableRow
-                key={`${index}__${file.fileName}`}
+                key={file.fileName}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 className="table-data-record"
               >
