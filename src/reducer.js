@@ -87,6 +87,11 @@ export function reducer(state, action) {
         ...state,
         userInfo,
       };
+    case "START__USER_INFO_LOADING":
+      return {
+        ...state,
+        isUserInfoLoading: true,
+      };
     case "COMPLETE__USER_INFO_LOADING":
       return {
         ...state,

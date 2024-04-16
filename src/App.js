@@ -183,6 +183,7 @@ function App({ signOut, user }) {
       });
   }
   function get_user_info(userName) {
+    dispatch({ type: "START__USER_INFO_LOADING" });
     const apiUrl = get_user_info_url(userName);
     fetch(apiUrl)
       .then((res) => res.json())
