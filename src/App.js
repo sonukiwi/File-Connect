@@ -6,7 +6,11 @@ import MainApp from "./components/App/MainApp/MainApp";
 import CircularProgressBarWithOverlay from "./components/UI/CircularProgressBarWithOverlay/CircularProgressBarWithOverlay";
 import config from "./amplifyconfiguration.json";
 import appConfig from "./config.json";
-import { get_file_presigned_download_url, get_files_fetch_url } from "./utils";
+import {
+  get_file_presigned_download_url,
+  get_files_fetch_url,
+  get_user_info_url,
+} from "./utils";
 import { useEffect, useReducer } from "react";
 import React from "react";
 import CustomModal from "./components/UI/CustomModal/CustomModal";
@@ -16,8 +20,10 @@ Amplify.configure(config);
 const initialState = {
   isPageLoading: true,
   isLoadMoreFilesBtnLoading: false,
+  isUserInfoLoading: true,
   filesInfo: {},
   checkedIndexes: [],
+  userInfo: {},
   dialog: {
     isVisible: false,
   },
@@ -123,6 +129,7 @@ function App({ signOut, user }) {
           );
           dispatch({ type: "RESET_FILES_INFO" });
           get_first_batch_of_files(user.username);
+          get_user_info(user.username);
         } else {
           const errorCode = responseData.errorCode;
           const isStorageNotAvailable =
@@ -175,6 +182,29 @@ function App({ signOut, user }) {
         dispatch({ type: "COMPLETE__PAGE_LOADING" });
       });
   }
+  function get_user_info(userName) {
+    const apiUrl = get_user_info_url(userName);
+    fetch(apiUrl)
+      .then((res) => res.json())
+      .then((responseData) => {
+        const isRequestSuccessful =
+          responseData.code === appConfig.RETURN_CODES.SUCCESS;
+        if (isRequestSuccessful) {
+          dispatch({ type: "SET_USER_INFO", payload: responseData.data.Item });
+        } else {
+          throw "Error";
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        const { heading, buttonText, description } =
+          appConfig.UNEXPECTED_ERROR_CONFIG;
+        show_dialog(heading, description.GET_USER_INFO, buttonText);
+      })
+      .finally(() => {
+        dispatch({ type: "COMPLETE__USER_INFO_LOADING" });
+      });
+  }
   function handle_checkbox_change(event, fileIndex) {
     const isChecked = event.target.checked;
     if (isChecked) {
@@ -220,6 +250,7 @@ function App({ signOut, user }) {
             toastMessage,
             appConfig.DELETE_FILES_COMPLETE_TOAST_CONFIG.hideAfterSeconds
           );
+          get_user_info(user.username);
         } else {
           throw "Error";
         }
@@ -276,6 +307,7 @@ function App({ signOut, user }) {
   // useEffect :: START
   useEffect(() => {
     get_first_batch_of_files(user.username);
+    get_user_info(user.username);
   }, []);
   // useEffect :: END
 
@@ -286,6 +318,8 @@ function App({ signOut, user }) {
     filesInfo,
     isLoadMoreFilesBtnLoading,
     checkedIndexes,
+    userInfo,
+    isUserInfoLoading,
   } = state;
   const dialogComponent = (
     <CustomModal
@@ -321,6 +355,9 @@ function App({ signOut, user }) {
       onChangeCheckbox={handle_checkbox_change}
       onDeleteFiles={delete_files}
       onDownloadFile={download_file}
+      isUserInfoLoading={isUserInfoLoading}
+      fetchedFilesCount={filesInfo.Contents?.length}
+      totalFilesCount={userInfo.FilesCount}
     />
   );
   const footerComponent = (

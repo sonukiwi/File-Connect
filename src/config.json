@@ -3,6 +3,7 @@
   "GET_FILES_LAMBDA_URL": "https://i7covsj6bo6ro2qmvt7gzlhw5q0lvcrx.lambda-url.ap-southeast-1.on.aws",
   "DELETE_FILES_LAMBDA_URL": "https://rb6jn3bgkvyhucghlj5j7gbxfa0bqsgt.lambda-url.ap-southeast-1.on.aws",
   "GET_PRESIGNED_URL_LAMBDA_URL": "https://lxmzlneuokewapp4fjsf25vrbq0lhdkg.lambda-url.ap-southeast-1.on.aws",
+  "GET_USER_INFO_LAMBDA_URL": "https://asfiiaznya6paz7xvgfowcguru0fkjug.lambda-url.ap-southeast-1.on.aws",
   "RETURN_CODES": {
     "SUCCESS": "SUCCESS",
     "FAILURE": "FAILURE",
@@ -26,7 +27,8 @@
       "GET_FILES": "Failed to fetch files due to some unexpected error. Please reload page",
       "GET_MORE_FILES": "Failed to fetch files due to some unexpected error. Please try again.",
       "DELETE": "Failed to delete files due to some unexpected error. Please try again.",
-      "DOWNLOAD": "Failed to download file due to some unexpected error. Please try again."
+      "DOWNLOAD": "Failed to download file due to some unexpected error. Please try again.",
+      "GET_USER_INFO": "Failed to fetch user info due to some unexpected error. Please reload page."
     }
   },
   "FILES_LOADED_TOAST_CONFIG": {

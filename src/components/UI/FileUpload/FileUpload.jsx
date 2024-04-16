@@ -25,6 +25,7 @@ export default function FileUpload({ buttonText, style, uploadFiles }) {
       startIcon={<CloudUploadIcon />}
       style={style}
       onChange={uploadFiles}
+      className="sharp__corner__btn"
     >
       {buttonText}
       <VisuallyHiddenInput type="file" multiple />

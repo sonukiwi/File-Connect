@@ -1,6 +1,5 @@
 import React from "react";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
-import InfoIcon from "@mui/icons-material/Info";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
@@ -9,7 +8,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { CircularProgress } from "@mui/material";
 import FileUpload from "../../UI/FileUpload/FileUpload";
 import DataTable from "../../UI/DataTable/DataTable";
-import TextSearch from "../../UI/TextSearch/TextSearch";
+import { get_pagination_message } from "../../../utils";
 
 const ButtonStyles = {
   height: "100%",
@@ -21,11 +20,10 @@ const FileUploadStyles = {
   padding: "0rem 2rem",
 };
 
-const TextSearchStyles = {
-  height: "100%",
+const FilesListInfoStyles = {
   flexGrow: 2,
-  marginLeft: "4rem",
-  backgroundColor: "rgb(222, 221, 221)",
+  textAlign: "right",
+  fontWeight: "bold",
 };
 
 const DataTableDivStyles = {
@@ -44,7 +42,14 @@ export default function MainApp({
   onChangeCheckbox,
   onDeleteFiles,
   onDownloadFile,
+  isUserInfoLoading,
+  fetchedFilesCount,
+  totalFilesCount,
 }) {
+  const paginationMessage = get_pagination_message(
+    fetchedFilesCount,
+    totalFilesCount
+  );
   const loadMoreBtnDiv = (
     <div className="load__more__btn__div">
       <Button
@@ -58,6 +63,7 @@ export default function MainApp({
             sx={{
               color: "white",
             }}
+            size={30}
           />
         ) : (
           "Load More"
@@ -69,12 +75,17 @@ export default function MainApp({
     <div className="main-app">
       <div className="top-bar">
         <Tooltip title="Check User Info" placement="bottom">
-          <Button variant="contained">
+          <Button variant="contained" className="sharp__corner__btn">
             <AccountCircleIcon />
           </Button>
         </Tooltip>
         <Tooltip title="Logout" placement="bottom">
-          <Button variant="contained" color="error" onClick={onLogout}>
+          <Button
+            variant="contained"
+            color="error"
+            className="sharp__corner__btn"
+            onClick={onLogout}
+          >
             <PowerSettingsNewIcon />
           </Button>
         </Tooltip>
@@ -87,6 +98,7 @@ export default function MainApp({
             color="error"
             disabled={!isDeleteBtnActive}
             onClick={onDeleteFiles}
+            className="sharp__corner__btn"
           >
             <DeleteIcon />
           </Button>
@@ -98,6 +110,7 @@ export default function MainApp({
             color="success"
             disabled={!isDownloadBtnActive}
             onClick={onDownloadFile}
+            className="sharp__corner__btn"
           >
             <DownloadIcon />
           </Button>
@@ -107,10 +120,17 @@ export default function MainApp({
           style={FileUploadStyles}
           uploadFiles={uploadFiles}
         />
-        <TextSearch
-          style={TextSearchStyles}
-          placeholder="Search Files. Enter text and press enter to search."
-        />
+        <div style={FilesListInfoStyles}>
+          {isUserInfoLoading ? (
+            <CircularProgress
+              size={30}
+              color="secondary"
+              sx={{ paddingRight: "2rem" }}
+            />
+          ) : (
+            <p style={{ paddingRight: "2rem" }}>{paginationMessage}</p>
+          )}
+        </div>
       </div>
       <div className="data-table">
         <DataTable

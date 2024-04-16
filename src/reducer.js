@@ -50,9 +50,6 @@ export function reducer(state, action) {
             state.filesInfo.Contents?.length > 0
               ? [...state.filesInfo.Contents, ...data.Contents]
               : [...data.Contents],
-          FilesCount: state.filesInfo.FilesCount
-            ? state.filesInfo.FilesCount + data.KeyCount
-            : data.KeyCount,
         },
       };
     case "REMOVE_FILES_FROM_FILES_INFO":
@@ -64,7 +61,6 @@ export function reducer(state, action) {
           Contents: state.filesInfo.Contents.filter(
             (file) => !filesToRemove.includes(file.fileName)
           ),
-          FilesCount: state.filesInfo.FilesCount - filesToRemove.length,
         },
       };
     case "SHOW_DIALOG":
@@ -84,6 +80,17 @@ export function reducer(state, action) {
         dialog: {
           isVisible: false,
         },
+      };
+    case "SET_USER_INFO":
+      const { payload: userInfo } = action;
+      return {
+        ...state,
+        userInfo,
+      };
+    case "COMPLETE__USER_INFO_LOADING":
+      return {
+        ...state,
+        isUserInfoLoading: false,
       };
     case "SHOW_TOAST":
       const { message } = action.payload;
