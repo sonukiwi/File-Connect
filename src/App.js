@@ -15,6 +15,7 @@ import { useEffect, useReducer } from "react";
 import React from "react";
 import CustomModal from "./components/UI/CustomModal/CustomModal";
 import { reducer } from "./reducer";
+import UserInfoModal from "./components/UI/UserInfoModal/UserInfoModal";
 Amplify.configure(config);
 
 const initialState = {
@@ -31,6 +32,9 @@ const initialState = {
     isVisible: false,
     vertical: appConfig.FILES_UPLOADING_TOAST_CONFIG.vertical,
     horizontal: appConfig.FILES_UPLOADING_TOAST_CONFIG.horizontal,
+  },
+  userInfoModal: {
+    isVisible: false,
   },
 };
 
@@ -64,6 +68,12 @@ function App({ signOut, user }) {
   }
   function close_dialog() {
     dispatch({ type: "HIDE_DIALOG" });
+  }
+  function show_user_info_dialog() {
+    dispatch({ type: "SHOW_USER_INFO_DIALOG" });
+  }
+  function hide_user_info_dialog() {
+    dispatch({ type: "HIDE_USER_INFO_DIALOG" });
   }
   function load_more_files() {
     dispatch({ type: "START__LOAD_MORE_FILES" });
@@ -303,6 +313,9 @@ function App({ signOut, user }) {
         hide_toast();
       });
   }
+  function show_user_info() {
+    show_user_info_dialog();
+  }
   // Handlers :: END
 
   // useEffect :: START
@@ -321,6 +334,7 @@ function App({ signOut, user }) {
     checkedIndexes,
     userInfo,
     isUserInfoLoading,
+    userInfoModal,
   } = state;
   const dialogComponent = (
     <CustomModal
@@ -329,6 +343,13 @@ function App({ signOut, user }) {
       description={dialog.description}
       buttonText={dialog.buttonText}
       onClose={close_dialog}
+    />
+  );
+  const userInfoModalComponent = (
+    <UserInfoModal
+      open={userInfoModal.isVisible}
+      userInfo={userInfo}
+      handleClose={hide_user_info_dialog}
     />
   );
   const toastComponent = (
@@ -359,6 +380,7 @@ function App({ signOut, user }) {
       isUserInfoLoading={isUserInfoLoading}
       fetchedFilesCount={filesInfo.Contents?.length}
       totalFilesCount={userInfo.FilesCount}
+      showUserInfo={show_user_info}
     />
   );
   const footerComponent = (
@@ -371,6 +393,7 @@ function App({ signOut, user }) {
 
   return (
     <div className="app">
+      {userInfoModalComponent}
       {dialogComponent}
       {toastComponent}
       {progressBarComponent}

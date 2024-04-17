@@ -81,6 +81,20 @@ export function reducer(state, action) {
           isVisible: false,
         },
       };
+    case "SHOW_USER_INFO_DIALOG":
+      return {
+        ...state,
+        userInfoModal: {
+          isVisible: true,
+        },
+      };
+    case "HIDE_USER_INFO_DIALOG":
+      return {
+        ...state,
+        userInfoModal: {
+          isVisible: false,
+        },
+      };
     case "SET_USER_INFO":
       const { payload: userInfo } = action;
       return {

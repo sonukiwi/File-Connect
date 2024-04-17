@@ -24,6 +24,7 @@ const FilesListInfoStyles = {
   flexGrow: 2,
   textAlign: "right",
   fontWeight: "bold",
+  // backgroundColor: "white",
 };
 
 const DataTableDivStyles = {
@@ -45,6 +46,7 @@ export default function MainApp({
   isUserInfoLoading,
   fetchedFilesCount,
   totalFilesCount,
+  showUserInfo,
 }) {
   const paginationMessage = get_pagination_message(
     fetchedFilesCount,
@@ -75,7 +77,11 @@ export default function MainApp({
     <div className="main-app">
       <div className="top-bar">
         <Tooltip title="Check User Info" placement="bottom">
-          <Button variant="contained" className="sharp__corner__btn">
+          <Button
+            variant="contained"
+            className="sharp__corner__btn"
+            onClick={showUserInfo}
+          >
             <AccountCircleIcon />
           </Button>
         </Tooltip>
@@ -128,7 +134,13 @@ export default function MainApp({
               sx={{ paddingRight: "2rem" }}
             />
           ) : (
-            <p style={{ paddingRight: "2rem" }}>{paginationMessage}</p>
+            <p
+              style={{
+                fontSize: "18px",
+              }}
+            >
+              {paginationMessage}
+            </p>
           )}
         </div>
       </div>
