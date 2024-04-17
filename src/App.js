@@ -146,6 +146,7 @@ function App({ signOut, user }) {
             errorCode === appConfig.RETURN_CODES.STORAGE_NOT_AVAILABLE;
           if (isStorageNotAvailable) {
             dispatch({ type: "COMPLETE__PAGE_LOADING" });
+            hide_toast();
             const { heading, description, buttonText } =
               appConfig.INSUFFICIENT_STORAGE_CONFIG;
             show_dialog(heading, description, buttonText);
@@ -156,11 +157,11 @@ function App({ signOut, user }) {
       })
       .catch((err) => {
         dispatch({ type: "COMPLETE__PAGE_LOADING" });
+        hide_toast();
         console.error(err);
         const { heading, buttonText, description } =
           appConfig.UNEXPECTED_ERROR_CONFIG;
         show_dialog(heading, description.UPLOAD, buttonText);
-        hide_toast();
       });
   }
   function upload_files(event) {
